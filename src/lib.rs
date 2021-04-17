@@ -77,31 +77,6 @@ impl Cgroup {
             Err(error) => println!("{:?}", error),
         }
     }
-
-    // pub async fn collect_cpu(&mut self) {
-    //     let cpu_os_string = OsString::from("cpu/");
-    //     let cpu_path = self.filesystem.join(cpu_os_string);
-    //     let read_dir = read_dir(&cpu_path).await;
-    //
-    //     match read_dir {
-    //         Ok(mut contents) => {
-    //             while let Ok(entries) = contents.next_entry().await {
-    //                 if let Some(entry) = entries {
-    //                     println!("File name - {:?}", entry.file_name());
-    //                     println!("Path - {:?}", entry.path());
-    //                     let contents = read_to_string(entry.path().as_path()).await;
-    //                     match contents {
-    //                         Ok(content) => println!("{}", content),
-    //                         Err(error) => println!("{:?}", error),
-    //                     }
-    //                 } else {
-    //                     break;
-    //                 }
-    //             }
-    //         }
-    //         Err(error) => println!("{:?}", error),
-    //     }
-    // }
 }
 
 #[cfg(test)]
@@ -114,11 +89,6 @@ mod tests {
         assert_eq!(cgroup.filesystem.is_dir(), true);
     }
 
-    // #[tokio::test]
-    // async fn collect_cpu() {
-    //     let mut cgroup = Cgroup::init().await;
-    //     cgroup.collect_cpu().await;
-    // }
     #[tokio::test]
     async fn collect_cpu() {
         let mut test_cgroup = Cgroup::init().await;
