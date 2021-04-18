@@ -49,7 +49,7 @@ impl Cgroup {
             V1controller::NetCls => OsString::from("net_cls/"),
             V1controller::Blkio => OsString::from("blkio/"),
             V1controller::PerfEvent => OsString::from("perf_event/"),
-            V1controller::NetPrio => OsString::from("netprio/"),
+            V1controller::NetPrio => OsString::from("net_prio/"),
             V1controller::Hugetlb => OsString::from("hugetlb/"),
             V1controller::Pids => OsString::from("pids/"),
             V1controller::Rdma => OsString::from("rdma/"),
@@ -159,6 +159,15 @@ mod tests {
         let test_perfevent_controller = V1controller::PerfEvent;
         test_cgroup
             .collect_controller(test_perfevent_controller)
+            .await;
+    }
+
+    #[tokio::test]
+    async fn collect_netprio() {
+        let mut test_cgroup = Cgroup::init().await;
+        let test_netprio_controller = V1controller::NetPrio;
+        test_cgroup
+            .collect_controller(test_netprio_controller)
             .await;
     }
 }
