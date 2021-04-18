@@ -179,4 +179,11 @@ mod tests {
             .collect_controller(test_hugetlb_controller)
             .await;
     }
+
+    #[tokio::test]
+    async fn collect_pids() {
+        let mut test_cgroup = Cgroup::init().await;
+        let test_pids_controller = V1controller::Pids;
+        test_cgroup.collect_controller(test_pids_controller).await;
+    }
 }
