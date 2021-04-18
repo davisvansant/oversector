@@ -46,7 +46,7 @@ impl Cgroup {
             V1controller::Memory => OsString::from("memory/"),
             V1controller::Devices => OsString::from("devices/"),
             V1controller::Freezer => OsString::from("freezer/"),
-            V1controller::NetCls => OsString::from("netcls/"),
+            V1controller::NetCls => OsString::from("net_cls/"),
             V1controller::Blkio => OsString::from("blkio/"),
             V1controller::PerfEvent => OsString::from("perf_event/"),
             V1controller::NetPrio => OsString::from("netprio/"),
@@ -137,5 +137,12 @@ mod tests {
         test_cgroup
             .collect_controller(test_freezer_controller)
             .await;
+    }
+
+    #[tokio::test]
+    async fn collect_netcls() {
+        let mut test_cgroup = Cgroup::init().await;
+        let test_netcls_controller = V1controller::NetCls;
+        test_cgroup.collect_controller(test_netcls_controller).await;
     }
 }
