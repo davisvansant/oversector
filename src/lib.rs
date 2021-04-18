@@ -120,4 +120,13 @@ mod tests {
         let test_memory_controller = V1controller::Memory;
         test_cgroup.collect_controller(test_memory_controller).await;
     }
+
+    #[tokio::test]
+    async fn collect_devices() {
+        let mut test_cgroup = Cgroup::init().await;
+        let test_devices_controller = V1controller::Devices;
+        test_cgroup
+            .collect_controller(test_devices_controller)
+            .await;
+    }
 }
