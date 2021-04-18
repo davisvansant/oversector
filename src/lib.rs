@@ -129,4 +129,13 @@ mod tests {
             .collect_controller(test_devices_controller)
             .await;
     }
+
+    #[tokio::test]
+    async fn collect_freezer() {
+        let mut test_cgroup = Cgroup::init().await;
+        let test_freezer_controller = V1controller::Freezer;
+        test_cgroup
+            .collect_controller(test_freezer_controller)
+            .await;
+    }
 }
