@@ -145,4 +145,11 @@ mod tests {
         let test_netcls_controller = V1controller::NetCls;
         test_cgroup.collect_controller(test_netcls_controller).await;
     }
+
+    #[tokio::test]
+    async fn collect_blkio() {
+        let mut test_cgroup = Cgroup::init().await;
+        let test_blkio_controller = V1controller::Blkio;
+        test_cgroup.collect_controller(test_blkio_controller).await;
+    }
 }
