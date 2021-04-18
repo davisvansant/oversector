@@ -186,4 +186,11 @@ mod tests {
         let test_pids_controller = V1controller::Pids;
         test_cgroup.collect_controller(test_pids_controller).await;
     }
+
+    #[tokio::test]
+    async fn collect_rdma() {
+        let mut test_cgroup = Cgroup::init().await;
+        let test_rdma_controller = V1controller::Rdma;
+        test_cgroup.collect_controller(test_rdma_controller).await;
+    }
 }
