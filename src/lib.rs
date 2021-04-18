@@ -170,4 +170,13 @@ mod tests {
             .collect_controller(test_netprio_controller)
             .await;
     }
+
+    #[tokio::test]
+    async fn collect_hugetlb() {
+        let mut test_cgroup = Cgroup::init().await;
+        let test_hugetlb_controller = V1controller::Hugetlb;
+        test_cgroup
+            .collect_controller(test_hugetlb_controller)
+            .await;
+    }
 }
