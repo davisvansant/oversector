@@ -152,4 +152,13 @@ mod tests {
         let test_blkio_controller = V1controller::Blkio;
         test_cgroup.collect_controller(test_blkio_controller).await;
     }
+
+    #[tokio::test]
+    async fn collect_perfevent() {
+        let mut test_cgroup = Cgroup::init().await;
+        let test_perfevent_controller = V1controller::PerfEvent;
+        test_cgroup
+            .collect_controller(test_perfevent_controller)
+            .await;
+    }
 }
