@@ -81,12 +81,14 @@ impl Cgroup {
 
 pub struct Subsystem {
     pub state: Vec<Vec<u8>>,
+    hierarchy: PathBuf,
 }
 
 impl Subsystem {
     pub async fn init(cgroup: &Cgroup) -> Subsystem {
         Subsystem {
             state: Vec::with_capacity(50),
+            hierarchy: cgroup.filesystem.to_path_buf(),
         }
     }
 }
@@ -106,6 +108,7 @@ mod tests {
         let test_cgroup = Cgroup::init().await;
         let test_subsystem = Subsystem::init(&test_cgroup).await;
         assert_eq!(test_subsystem.state.len(), 0);
+        assert_eq!(test_subsystem.hierarchy, PathBuf::from("/sys/fs/cgroup/"));
     }
 
     #[tokio::test]
