@@ -79,6 +79,18 @@ impl Cgroup {
     }
 }
 
+pub struct Subsystem {
+    pub state: Vec<Vec<u8>>,
+}
+
+impl Subsystem {
+    pub async fn init() -> Subsystem {
+        Subsystem {
+            state: Vec::with_capacity(50),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
