@@ -84,7 +84,7 @@ pub struct Subsystem {
 }
 
 impl Subsystem {
-    pub async fn init() -> Subsystem {
+    pub async fn init(cgroup: &Cgroup) -> Subsystem {
         Subsystem {
             state: Vec::with_capacity(50),
         }
@@ -96,9 +96,16 @@ mod tests {
     use super::*;
 
     #[tokio::test]
-    async fn init() {
+    async fn cgroup_init() {
         let cgroup = Cgroup::init().await;
         assert_eq!(cgroup.filesystem.is_dir(), true);
+    }
+
+    #[tokio::test]
+    async fn subsystem_init() {
+        let test_cgroup = Cgroup::init().await;
+        let test_subsystem = Subsystem::init(&test_cgroup).await;
+        assert_eq!(test_subsystem.state.len(), 0);
     }
 
     #[tokio::test]
