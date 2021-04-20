@@ -170,11 +170,19 @@ mod tests {
 
     #[tokio::test]
     async fn collect_cpu_accounting() {
-        let mut test_cgroup = Cgroup::init().await;
+        let test_cgroup = Cgroup::init().await;
         let test_cpu_accounting_controller = V1controller::Cpuacct;
-        test_cgroup
-            .collect_controller(test_cpu_accounting_controller)
+        let mut test_subsystem = Subsystem::init(&test_cgroup).await;
+        assert_eq!(test_subsystem.state.len(), 0);
+        assert_eq!(test_subsystem.hierarchy, PathBuf::from("/sys/fs/cgroup/"));
+        test_subsystem
+            .collect(&test_cpu_accounting_controller)
             .await;
+        assert_eq!(test_subsystem.state.len(), 1);
+        test_subsystem
+            .collect(&test_cpu_accounting_controller)
+            .await;
+        assert_eq!(test_subsystem.state.len(), 2);
     }
 
     #[tokio::test]
