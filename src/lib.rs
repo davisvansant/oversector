@@ -1,6 +1,7 @@
 use std::ffi::OsString;
 use std::path::PathBuf;
 
+use tokio::fs::read;
 use tokio::fs::read_dir;
 use tokio::fs::read_to_string;
 // use tokio::fs::File;
@@ -80,7 +81,7 @@ impl Cgroup {
 }
 
 pub struct Subsystem {
-    pub state: Vec<Vec<u8>>,
+    pub state: Vec<Vec<Vec<u8>>>,
     hierarchy: PathBuf,
 }
 
@@ -90,6 +91,49 @@ impl Subsystem {
             state: Vec::with_capacity(50),
             hierarchy: cgroup.filesystem.to_path_buf(),
         }
+    }
+
+    pub async fn collect(&mut self, controller: V1controller) {
+        let mut vec: Vec<Vec<u8>> = Vec::with_capacity(10);
+
+        let os_string = match controller {
+            V1controller::Cpu => OsString::from("cpu/"),
+            V1controller::Cpuacct => OsString::from("cpuacct/"),
+            V1controller::Cpuset => OsString::from("cpuset/"),
+            V1controller::Memory => OsString::from("memory/"),
+            V1controller::Devices => OsString::from("devices/"),
+            V1controller::Freezer => OsString::from("freezer/"),
+            V1controller::NetCls => OsString::from("net_cls/"),
+            V1controller::Blkio => OsString::from("blkio/"),
+            V1controller::PerfEvent => OsString::from("perf_event/"),
+            V1controller::NetPrio => OsString::from("net_prio/"),
+            V1controller::Hugetlb => OsString::from("hugetlb/"),
+            V1controller::Pids => OsString::from("pids/"),
+            V1controller::Rdma => OsString::from("rdma/"),
+        };
+
+        let path = self.hierarchy.join(os_string);
+        let read_dir = read_dir(&path).await;
+
+        match read_dir {
+            Ok(mut contents) => {
+                while let Ok(entries) = contents.next_entry().await {
+                    if let Some(entry) = entries {
+                        let contents = read(entry.path().as_path()).await;
+                        match contents {
+                            Ok(content) => {
+                                vec.push(content);
+                            }
+                            Err(error) => println!("{:?}", error),
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            }
+            Err(error) => println!("{:?}", error),
+        }
+        self.state.push(vec.to_owned());
     }
 }
 
@@ -113,9 +157,13 @@ mod tests {
 
     #[tokio::test]
     async fn collect_cpu() {
-        let mut test_cgroup = Cgroup::init().await;
+        let test_cgroup = Cgroup::init().await;
         let test_cpu_controller = V1controller::Cpu;
-        test_cgroup.collect_controller(test_cpu_controller).await;
+        let mut test_subsystem = Subsystem::init(&test_cgroup).await;
+        assert_eq!(test_subsystem.state.len(), 0);
+        assert_eq!(test_subsystem.hierarchy, PathBuf::from("/sys/fs/cgroup/"));
+        test_subsystem.collect(test_cpu_controller).await;
+        assert_eq!(test_subsystem.state.len(), 1);
     }
 
     #[tokio::test]
