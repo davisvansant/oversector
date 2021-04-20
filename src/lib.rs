@@ -317,8 +317,14 @@ mod tests {
 
     #[tokio::test]
     async fn collect_rdma() {
-        let mut test_cgroup = Cgroup::init().await;
+        let test_cgroup = Cgroup::init().await;
         let test_rdma_controller = V1controller::Rdma;
-        test_cgroup.collect_controller(test_rdma_controller).await;
+        let mut test_subsystem = Subsystem::init(&test_cgroup).await;
+        assert_eq!(test_subsystem.state.len(), 0);
+        assert_eq!(test_subsystem.hierarchy, PathBuf::from("/sys/fs/cgroup/"));
+        test_subsystem.collect(&test_rdma_controller).await;
+        assert_eq!(test_subsystem.state.len(), 1);
+        test_subsystem.collect(&test_rdma_controller).await;
+        assert_eq!(test_subsystem.state.len(), 2);
     }
 }
