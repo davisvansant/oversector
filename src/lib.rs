@@ -226,11 +226,15 @@ mod tests {
 
     #[tokio::test]
     async fn collect_freezer() {
-        let mut test_cgroup = Cgroup::init().await;
+        let test_cgroup = Cgroup::init().await;
         let test_freezer_controller = V1controller::Freezer;
-        test_cgroup
-            .collect_controller(test_freezer_controller)
-            .await;
+        let mut test_subsystem = Subsystem::init(&test_cgroup).await;
+        assert_eq!(test_subsystem.state.len(), 0);
+        assert_eq!(test_subsystem.hierarchy, PathBuf::from("/sys/fs/cgroup/"));
+        test_subsystem.collect(&test_freezer_controller).await;
+        assert_eq!(test_subsystem.state.len(), 1);
+        test_subsystem.collect(&test_freezer_controller).await;
+        assert_eq!(test_subsystem.state.len(), 2);
     }
 
     #[tokio::test]
