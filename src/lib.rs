@@ -200,9 +200,15 @@ mod tests {
 
     #[tokio::test]
     async fn collect_memory() {
-        let mut test_cgroup = Cgroup::init().await;
+        let test_cgroup = Cgroup::init().await;
         let test_memory_controller = V1controller::Memory;
-        test_cgroup.collect_controller(test_memory_controller).await;
+        let mut test_subsystem = Subsystem::init(&test_cgroup).await;
+        assert_eq!(test_subsystem.state.len(), 0);
+        assert_eq!(test_subsystem.hierarchy, PathBuf::from("/sys/fs/cgroup/"));
+        test_subsystem.collect(&test_memory_controller).await;
+        assert_eq!(test_subsystem.state.len(), 1);
+        test_subsystem.collect(&test_memory_controller).await;
+        assert_eq!(test_subsystem.state.len(), 2);
     }
 
     #[tokio::test]
