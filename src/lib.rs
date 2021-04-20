@@ -133,7 +133,7 @@ impl Subsystem {
             }
             Err(error) => println!("{:?}", error),
         }
-        self.state.push(vec.to_owned());
+        self.state.push(vec);
     }
 }
 
