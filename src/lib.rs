@@ -93,7 +93,7 @@ impl Subsystem {
         }
     }
 
-    pub async fn collect(&mut self, controller: V1controller) {
+    pub async fn collect(&mut self, controller: &V1controller) {
         let mut vec: Vec<Vec<u8>> = Vec::with_capacity(10);
 
         let os_string = match controller {
@@ -162,8 +162,10 @@ mod tests {
         let mut test_subsystem = Subsystem::init(&test_cgroup).await;
         assert_eq!(test_subsystem.state.len(), 0);
         assert_eq!(test_subsystem.hierarchy, PathBuf::from("/sys/fs/cgroup/"));
-        test_subsystem.collect(test_cpu_controller).await;
+        test_subsystem.collect(&test_cpu_controller).await;
         assert_eq!(test_subsystem.state.len(), 1);
+        test_subsystem.collect(&test_cpu_controller).await;
+        assert_eq!(test_subsystem.state.len(), 2);
     }
 
     #[tokio::test]
