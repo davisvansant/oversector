@@ -98,13 +98,13 @@ impl Subsystem {
 mod tests {
     use super::*;
 
-    #[tokio::test]
+    #[tokio::test(flavor = "multi_thread")]
     async fn cgroup_init() {
         let cgroup = Cgroup::init().await;
         assert_eq!(cgroup.filesystem.is_dir(), true);
     }
 
-    #[tokio::test]
+    #[tokio::test(flavor = "multi_thread")]
     async fn subsystem_init() {
         let test_cgroup = Cgroup::init().await;
         let test_subsystem = Subsystem::init(&test_cgroup).await;
@@ -112,7 +112,7 @@ mod tests {
         assert_eq!(test_subsystem.hierarchy, PathBuf::from("/sys/fs/cgroup/"));
     }
 
-    #[tokio::test]
+    #[tokio::test(flavor = "multi_thread")]
     async fn collect_cpu() {
         let test_cgroup = Cgroup::init().await;
         let test_cpu_controller = V1controller::Cpu;
@@ -125,7 +125,7 @@ mod tests {
         assert_eq!(test_subsystem.state.len(), 2);
     }
 
-    #[tokio::test]
+    #[tokio::test(flavor = "multi_thread")]
     async fn collect_cpu_accounting() {
         let test_cgroup = Cgroup::init().await;
         let test_cpu_accounting_controller = V1controller::Cpuacct;
@@ -142,7 +142,7 @@ mod tests {
         assert_eq!(test_subsystem.state.len(), 2);
     }
 
-    #[tokio::test]
+    #[tokio::test(flavor = "multi_thread")]
     async fn collect_cpu_set() {
         let test_cgroup = Cgroup::init().await;
         let test_cpu_set_controller = V1controller::Cpuset;
@@ -155,7 +155,7 @@ mod tests {
         assert_eq!(test_subsystem.state.len(), 2);
     }
 
-    #[tokio::test]
+    #[tokio::test(flavor = "multi_thread")]
     async fn collect_memory() {
         let test_cgroup = Cgroup::init().await;
         let test_memory_controller = V1controller::Memory;
@@ -168,7 +168,7 @@ mod tests {
         assert_eq!(test_subsystem.state.len(), 2);
     }
 
-    #[tokio::test]
+    #[tokio::test(flavor = "multi_thread")]
     async fn collect_devices() {
         let test_cgroup = Cgroup::init().await;
         let test_devices_controller = V1controller::Devices;
@@ -181,7 +181,7 @@ mod tests {
         assert_eq!(test_subsystem.state.len(), 2);
     }
 
-    #[tokio::test]
+    #[tokio::test(flavor = "multi_thread")]
     async fn collect_freezer() {
         let test_cgroup = Cgroup::init().await;
         let test_freezer_controller = V1controller::Freezer;
@@ -194,7 +194,7 @@ mod tests {
         assert_eq!(test_subsystem.state.len(), 2);
     }
 
-    #[tokio::test]
+    #[tokio::test(flavor = "multi_thread")]
     async fn collect_netcls() {
         let test_cgroup = Cgroup::init().await;
         let test_netcls_controller = V1controller::NetCls;
@@ -207,7 +207,7 @@ mod tests {
         assert_eq!(test_subsystem.state.len(), 2);
     }
 
-    #[tokio::test]
+    #[tokio::test(flavor = "multi_thread")]
     async fn collect_blkio() {
         let test_cgroup = Cgroup::init().await;
         let test_blkio_controller = V1controller::Blkio;
@@ -220,7 +220,7 @@ mod tests {
         assert_eq!(test_subsystem.state.len(), 2);
     }
 
-    #[tokio::test]
+    #[tokio::test(flavor = "multi_thread")]
     async fn collect_perfevent() {
         let test_cgroup = Cgroup::init().await;
         let test_perfevent_controller = V1controller::PerfEvent;
@@ -233,7 +233,7 @@ mod tests {
         assert_eq!(test_subsystem.state.len(), 2);
     }
 
-    #[tokio::test]
+    #[tokio::test(flavor = "multi_thread")]
     async fn collect_netprio() {
         let test_cgroup = Cgroup::init().await;
         let test_netprio_controller = V1controller::NetPrio;
@@ -246,7 +246,7 @@ mod tests {
         assert_eq!(test_subsystem.state.len(), 2);
     }
 
-    #[tokio::test]
+    #[tokio::test(flavor = "multi_thread")]
     async fn collect_hugetlb() {
         let test_cgroup = Cgroup::init().await;
         let test_hugetlb_controller = V1controller::Hugetlb;
@@ -259,7 +259,7 @@ mod tests {
         assert_eq!(test_subsystem.state.len(), 2);
     }
 
-    #[tokio::test]
+    #[tokio::test(flavor = "multi_thread")]
     async fn collect_pids() {
         let test_cgroup = Cgroup::init().await;
         let test_pids_controller = V1controller::Pids;
@@ -272,7 +272,7 @@ mod tests {
         assert_eq!(test_subsystem.state.len(), 2);
     }
 
-    #[tokio::test]
+    #[tokio::test(flavor = "multi_thread")]
     async fn collect_rdma() {
         let test_cgroup = Cgroup::init().await;
         let test_rdma_controller = V1controller::Rdma;
