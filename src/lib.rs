@@ -38,7 +38,7 @@ impl Cgroup {
 }
 
 pub struct Subsystem {
-    pub state: Vec<Vec<Vec<u8>>>,
+    pub state: Vec<Vec<FileSystemEntry>>,
     hierarchy: PathBuf,
 }
 
@@ -51,7 +51,7 @@ impl Subsystem {
     }
 
     pub async fn collect(&mut self, controller: &V1controller) {
-        let mut vec: Vec<Vec<u8>> = Vec::with_capacity(10);
+        let mut vec: Vec<FileSystemEntry> = Vec::with_capacity(10);
 
         let os_string = match controller {
             V1controller::Cpu => OsString::from("cpu/"),
@@ -79,7 +79,12 @@ impl Subsystem {
                         let contents = read(entry.path().as_path()).await;
                         match contents {
                             Ok(content) => {
-                                vec.push(content);
+                                let file_system_entry = FileSystemEntry {
+                                    contents: content,
+                                    path: entry.path(),
+                                    file_name: entry.file_name(),
+                                };
+                                vec.push(file_system_entry);
                             }
                             Err(error) => println!("{:?}", error),
                         }
@@ -92,6 +97,12 @@ impl Subsystem {
         }
         self.state.push(vec);
     }
+}
+
+pub struct FileSystemEntry {
+    pub contents: Vec<u8>,
+    pub path: PathBuf,
+    pub file_name: OsString,
 }
 
 #[cfg(test)]
@@ -283,5 +294,21 @@ mod tests {
         assert_eq!(test_subsystem.state.len(), 1);
         test_subsystem.collect(&test_rdma_controller).await;
         assert_eq!(test_subsystem.state.len(), 2);
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn entry() {
+        let test_cgroup = Cgroup::init().await;
+        let test_cpu_controller = V1controller::Cpu;
+        let mut test_subsystem = Subsystem::init(&test_cgroup).await;
+        test_subsystem.collect(&test_cpu_controller).await;
+        assert_eq!(test_subsystem.state.len(), 1);
+        for state in test_subsystem.state {
+            for entry in state {
+                assert_eq!(entry.contents.is_empty(), false);
+                assert_eq!(entry.path.exists(), true);
+                assert_eq!(entry.file_name.is_empty(), false);
+            }
+        }
     }
 }
