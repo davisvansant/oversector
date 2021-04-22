@@ -97,6 +97,10 @@ impl Subsystem {
         }
         self.state.push(vec);
     }
+
+    pub async fn clear(&mut self) {
+        self.state.clear();
+    }
 }
 
 pub struct FileSystemEntry {
@@ -310,5 +314,22 @@ mod tests {
                 assert_eq!(entry.file_name.is_empty(), false);
             }
         }
+    }
+
+    #[tokio::test(flavor = "multi_thread")]
+    async fn clear() {
+        let test_cgroup = Cgroup::init().await;
+        let test_cpu_controller = V1controller::Cpu;
+        let mut test_subsystem = Subsystem::init(&test_cgroup).await;
+        assert_eq!(test_subsystem.state.len(), 0);
+        assert_eq!(test_subsystem.state.capacity(), 50);
+        for _ in 1..=50 {
+            test_subsystem.collect(&test_cpu_controller).await;
+        }
+        assert_eq!(test_subsystem.state.len(), 50);
+        assert_eq!(test_subsystem.state.capacity(), 50);
+        test_subsystem.clear().await;
+        assert_eq!(test_subsystem.state.len(), 0);
+        assert_eq!(test_subsystem.state.capacity(), 50);
     }
 }
