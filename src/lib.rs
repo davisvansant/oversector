@@ -116,7 +116,7 @@ mod tests {
     #[tokio::test(flavor = "multi_thread")]
     async fn cgroup_init() {
         let cgroup = Cgroup::init().await;
-        assert_eq!(cgroup.filesystem.is_dir(), true);
+        assert!(cgroup.filesystem.is_dir());
     }
 
     #[tokio::test(flavor = "multi_thread")]
@@ -309,9 +309,9 @@ mod tests {
         assert_eq!(test_subsystem.state.len(), 1);
         for state in test_subsystem.state {
             for entry in state {
-                assert_eq!(entry.contents.is_empty(), false);
-                assert_eq!(entry.path.exists(), true);
-                assert_eq!(entry.file_name.is_empty(), false);
+                assert!(!entry.contents.is_empty());
+                assert!(entry.path.exists());
+                assert!(!entry.file_name.is_empty());
             }
         }
     }
